@@ -1,68 +1,40 @@
 # sonar-svc-auth-forge
 
-`sonar-svc-auth-forge` packages a practical backend services exercise in Kotlin. The emphasis is on deterministic behavior, a small public API, and examples that explain the tradeoffs.
+`sonar-svc-auth-forge` explores backend services with a small Kotlin codebase and local fixtures. The technical goal is to design a Kotlin verification harness for auth systems, covering resource planning, capacity fixtures, and failure-oriented tests.
 
-## How I Read Sonar Svc Auth Forge
+## Use Case
 
-The useful thing to inspect here is how the same score rule is represented in code, metadata, and examples. If those three pieces disagree, the audit script should make the drift visible.
+The point is to make a small domain rule concrete enough that a reader can change it and immediately see what broke.
 
-## Main Behaviors
+## Sonar Svc Auth Forge Review Notes
 
-- Includes extended examples for queue pressure, including `surge` and `degraded`.
-- Documents bounded workers tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
-- Adds a repository audit script that checks structure before running the language verifier.
+For a quick review, compare `queue pressure` with `queue pressure` before reading the middle cases.
 
-## Problem Shape
+## Highlights
 
-The goal is to capture the core behavior in code and make the surrounding assumptions obvious. A reader should be able to run the verifier, open the fixtures, and understand why each decision was made.
+- `fixtures/domain_review.csv` adds cases for queue pressure and retry load.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/sonar-svc-auth-walkthrough.md` walks through the case spread.
+- The Kotlin code includes a review path for `queue pressure` and `queue pressure`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Repository Map
+## Code Layout
 
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
+The core code exposes a scoring path and the added review layer uses `signal`, `slack`, `drag`, and `confidence`. The domain terms are `queue pressure`, `retry load`, `worker slack`, and `session drift`.
 
-## Internal Model
+The Kotlin code keeps the review rule close to the tests.
 
-The project is organized around a compact model rather than a large framework. Inputs are scored, classified, and checked against golden fixtures. The constants live in code and are mirrored in metadata so documentation drift is easy to catch. The Kotlin version keeps data classes and model logic close together for a JVM-friendly core.
-
-## How To Run It
+## Run The Check
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Regression Path
 
-## Scenario Walkthrough
+The check exercises the source code and the review fixture. `stale` is the high score at 263; `baseline` is the low score at 71.
 
-The examples are meant to be readable before they are exhaustive. They cover enough variation to show how latency and risk can pull a decision below the threshold.
+## Future Work
 
-## Validation
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
-
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Known Edges
-
-This code is local-first. It makes no claim about deployed usage and avoids credentials, hosted state, and environment-specific setup.
-
-## Follow-Up Work
-
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add a loader for `examples/extended_cases.csv` and promote selected cases into the language test suite.
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add one more backend services fixture that focuses on a malformed or borderline input.
-
-## Run It Locally
-
-Install Kotlin and run the commands from the repository root. The project does not need credentials or a hosted service.
+No external service is required. A deeper version would add more negative cases and a clearer boundary around invalid input.
